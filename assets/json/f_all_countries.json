@@ -800,8 +800,8 @@
         },
         {
             "name": "World",
-            "code": null,
-            "flag": null
+            "code": "W",
+            "flag": "https://uxwing.com/wp-content/themes/uxwing/download/31-location-travel-map/earth.svg"
         },
         {
             "name": "Zambia",

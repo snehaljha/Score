@@ -1,4 +1,5 @@
 import 'package:Score/Pages/explore.dart';
+import 'package:Score/navigation.dart';
 import 'package:flutter/material.dart';
 
 class Menu extends StatelessWidget {
@@ -11,6 +12,9 @@ class Menu extends StatelessWidget {
         Container(
           margin: const EdgeInsets.only(top: 10.0),
           child: InkWell(
+            onTap: () {
+              Navigation.switchTo(1, context);
+            },
             child: Container(
               padding: const EdgeInsets.all(padding),
               child: Row(
@@ -47,10 +51,7 @@ class Menu extends StatelessWidget {
         Container(
           child: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Explore()),
-              );
+              Navigation.switchTo(3, context);
             },
             child: Container(
               padding: const EdgeInsets.all(padding),
