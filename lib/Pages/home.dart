@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'all_matches.dart';
+import 'fav_matches.dart';
 import 'menu.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,18 +15,24 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Home"),
-      ),
-      drawer: Drawer(
-        child: Menu(),
-      ),
-      body: Center(
-        child: Text(
-          "Favorite Items",
-          style: TextStyle(color: Colors.grey),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: [Text("Fav Matches"), Text("Live")],
+          ),
+          title: Text("Home"),
         ),
+        drawer: Drawer(
+          child: Menu(),
+        ),
+        body: TabBarView(
+          children: [
+            FavMatches(),
+            AllMatches()
+          ],
+        )
       ),
     );
   }
