@@ -11,6 +11,9 @@ class Category implements Comparable {
 
   Category(
       this.name, this.slug, this.id, this.priority, this.flag, this.alpha2) {
+    if(this.priority == null) {
+      this.priority = 0;
+    }
     if (alpha2 != null)
       this.flagUrl = Constants.categoryIcon + alpha2.toLowerCase() + ".png";
     else if (flag != null)
