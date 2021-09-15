@@ -49,7 +49,7 @@ class _LeagueViewState extends State<LeagueView> {
                   ),
                 ),
                 FutureBuilder<List<Object>>(
-                  future: TitlesLeader.fetchTitles(league.id),
+                  future: TitlesLoader.fetchTitles(league.id),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Object>> snapshot) {
                     if (!snapshot.hasData || snapshot.data == null) {
