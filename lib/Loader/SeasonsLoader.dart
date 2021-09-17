@@ -1,5 +1,5 @@
 import 'dart:collection';
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:Score/Model/Season.dart';
 import 'package:Score/constants.dart';
@@ -14,13 +14,16 @@ class SeasonsLoader {
         Constants.seasons.replaceFirst("{league_id}", leagueId.toString());
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      return parseSeasons(response, leagueId);
+      print("season fetched");
+      return parseSeasons(response.body, leagueId);
     } else
+    print("Season not fetched");
       throw Exception("Could not fetch Seasons");
   }
 
   static List<Season> parseSeasons(response, leagueid) {
-    final responseList = response["seasons"];
+    final responseList = json.decode(response)["seasons"];
+    print("seasons.length");
     List<Season> seasons = [];
     for (var s in responseList) {
       seasons.add(new Season(s["name"], s["year"], s["id"]));
