@@ -6,7 +6,7 @@ import 'package:Score/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-class TitlesLeader {
+class TitlesLoader {
   static HashMap<int, List<Object>> map = new HashMap();
 
   static List<Object> parseTitles(id, responseBody) {

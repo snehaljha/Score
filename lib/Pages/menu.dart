@@ -34,6 +34,9 @@ class Menu extends StatelessWidget {
         ),
         Container(
           child: InkWell(
+            onTap: () {
+              Navigation.switchTo(2, context);
+            },
             child: Container(
               padding: const EdgeInsets.all(padding),
               child: Row(
@@ -41,7 +44,7 @@ class Menu extends StatelessWidget {
                   Icon(Icons.tv),
                   Container(
                     margin: const EdgeInsets.only(left: 10.0),
-                    child: Text("Matches"),
+                    child: Text("Live Matches"),
                   )
                 ],
               ),
