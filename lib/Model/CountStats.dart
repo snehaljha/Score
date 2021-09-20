@@ -5,9 +5,9 @@ class CountStats {
   int count;
   int id;
   String name;
-  String appearance;
+  int appearances;
   Player player;
 
-  CountStats(this.name, this.type, this.count, this.appearance, this.id, this.player);
+  CountStats(this.name, this.type, this.count, this.appearances, this.id, this.player);
 
 }
