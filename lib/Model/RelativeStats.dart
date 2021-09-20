@@ -6,9 +6,9 @@ class RelativeStats {
   double precentage;
   int id;
   String name;
-  String appearance;
+  int appearances;
   Player player;
 
-  RelativeStats(this.name, this.type, this.count, this.precentage, this.appearance, this.id, this.player);
+  RelativeStats(this.name, this.type, this.count, this.precentage, this.appearances, this.id, this.player);
 
 }
