@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:Score/Loader/LeagueMatchesLoader.dart';
 import 'package:Score/Loader/SeasonsLoader.dart';
+import 'package:Score/Loader/StandingLoader.dart';
 import 'package:Score/Loader/StatsLoader.dart';
 import 'package:Score/Loader/TitlesLoader.dart';
 import 'package:Score/Model/CountStats.dart';
@@ -10,6 +11,7 @@ import 'package:Score/Model/Match.dart';
 import 'package:Score/Model/Player.dart';
 import 'package:Score/Model/RelativeStats.dart';
 import 'package:Score/Model/Season.dart';
+import 'package:Score/Model/StandingItem.dart';
 import 'package:Score/Model/Team.dart';
 import 'package:flutter/material.dart';
 
@@ -27,12 +29,23 @@ class _LeagueViewState extends State<LeagueView> {
   int? seasonId = null;
   HashMap<String, Object>? stats = null;
   String selectedYear = "";
+  List<StandingItem>? standings = null;
 
-  Future<List<Season>> getSeasons() async {
+  Future<List<Season>> getSeasons(int tabNumber) async {
     List<Season> seasons = await SeasonsLoader.fetchSeasons(league.id);
     this.seasonId = seasons[0].id;
-    if (stats == null)
-      stats = await StatsLoader.fetchStats(league.id, seasonId!);
+    switch (tabNumber) {
+      case 1:
+        if (stats == null)
+          stats = await StatsLoader.fetchStats(league.id, seasonId!);
+        break;
+      case 2:
+        break;
+      default:
+        if (standings == null)
+          standings = await StandingLoader.fetchStanding(league.id, seasonId!);
+        standings!.sort();
+    }
     return seasons;
   }
 
@@ -259,7 +272,7 @@ class _LeagueViewState extends State<LeagueView> {
             },
           ),
           FutureBuilder<List<Season>>(
-            future: getSeasons(),
+            future: getSeasons(1),
             builder:
                 (BuildContext context, AsyncSnapshot<List<Season>> snapshot) {
               if (!snapshot.hasData) {
@@ -371,6 +384,112 @@ class _LeagueViewState extends State<LeagueView> {
     );
   }
 
+  Container getLeagueStandings() {
+    return Container(
+      child: Column(
+        children: [
+          FutureBuilder<List<Season>>(
+            future: getSeasons(3),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Season>> snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
+                  child: Center(
+                    child: Text("Loading"),
+                  ),
+                );
+              }
+              String selected = "";
+              print("data found");
+              List<String> labels = [];
+              List<DropdownMenuItem<String>> ddi = [];
+              snapshot.data!.forEach((d) => labels.add(d.year));
+              labels.forEach((l) => ddi.add(DropdownMenuItem(
+                    value: l,
+                    child: Text(l),
+                  )));
+              selected = labels[0];
+              return Column(children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: DropdownButtonFormField<String>(
+                    value: selected,
+                    items: ddi,
+                    onChanged: (String? newValue) async {
+                      for (Season season in snapshot.data!) {
+                        if (season.year == newValue) this.seasonId = season.id;
+                      }
+                      this.standings = await StandingLoader.fetchStanding(
+                          league.id, seasonId!);
+                      selected = newValue!;
+                      setState(() {
+                        selected;
+                      });
+                    },
+                  ),
+                ),
+                Container(child: getLeagueStandingsData()),
+              ]);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Table getLeagueStandingsData() {
+    List<TableRow> members = [];
+    members.add(TableRow(
+      children: [
+        TableCell(child: Text("#")),
+        TableCell(child: Text("Team")),
+        TableCell(child: Text("P")),
+        TableCell(child: Text("W")),
+        TableCell(child: Text("L")),
+        TableCell(child: Text("D")),
+        TableCell(child: Text("Goals")),
+        TableCell(child: Text("Pts"))
+      ],
+    ));
+    for (StandingItem i in standings!) {
+      members.add(new TableRow(
+        children: [
+          TableCell(child: Text(i.position.toString())),
+          TableCell(
+              child: Row(children: [
+            Image.network(
+              i.team.teamLogo,
+              width: 10.0,
+              height: 10,
+            ),
+            Text(i.team.name),
+          ])),
+          TableCell(child: Text(i.matches.toString())),
+          TableCell(child: Text(i.wins.toString())),
+          TableCell(child: Text(i.losses.toString())),
+          TableCell(child: Text(i.draws.toString())),
+          TableCell(
+              child: Text(
+                  i.scoresFor.toString() + "/" + i.scoresAgainst.toString())),
+          TableCell(child: Text(i.points.toString()))
+        ],
+      ));
+    }
+    return Table(
+      columnWidths: {
+        0: IntrinsicColumnWidth(flex: 1),
+        1: IntrinsicColumnWidth(flex: 1),
+        2: IntrinsicColumnWidth(flex: 1),
+        3: IntrinsicColumnWidth(flex: 1),
+        4: IntrinsicColumnWidth(flex: 1),
+        5: IntrinsicColumnWidth(flex: 1),
+        6: IntrinsicColumnWidth(flex: 1),
+        7: IntrinsicColumnWidth(flex: 1),
+      },
+      children: members,
+    );
+  }
+
   Container getLeagueMatches() {
     return Container(
         child: FutureBuilder<List<Match>>(
@@ -400,11 +519,7 @@ class _LeagueViewState extends State<LeagueView> {
         body: TabBarView(children: [
           getLeagueOverview(),
           getLeagueMatches(),
-          Container(
-            child: Center(
-              child: Text("Standings"),
-            ),
-          )
+          getLeagueStandings()
         ]),
       ),
     );
