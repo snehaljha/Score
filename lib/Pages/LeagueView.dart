@@ -1,10 +1,12 @@
 import 'dart:collection';
 
+import 'package:Score/Loader/LeagueMatchesLoader.dart';
 import 'package:Score/Loader/SeasonsLoader.dart';
 import 'package:Score/Loader/StatsLoader.dart';
 import 'package:Score/Loader/TitlesLoader.dart';
 import 'package:Score/Model/CountStats.dart';
 import 'package:Score/Model/League.dart';
+import 'package:Score/Model/Match.dart';
 import 'package:Score/Model/Player.dart';
 import 'package:Score/Model/RelativeStats.dart';
 import 'package:Score/Model/Season.dart';
@@ -29,13 +31,14 @@ class _LeagueViewState extends State<LeagueView> {
   Future<List<Season>> getSeasons() async {
     List<Season> seasons = await SeasonsLoader.fetchSeasons(league.id);
     this.seasonId = seasons[0].id;
-    if(stats == null)
-    stats = await StatsLoader.fetchStats(league.id, seasonId!);
+    if (stats == null)
+      stats = await StatsLoader.fetchStats(league.id, seasonId!);
     return seasons;
   }
 
   Future<HashMap<String, Object>> getStats() async {
-    HashMap<String, Object> allStats = await StatsLoader.fetchStats(league.id, seasonId!);
+    HashMap<String, Object> allStats =
+        await StatsLoader.fetchStats(league.id, seasonId!);
     return allStats;
   }
 
@@ -45,70 +48,83 @@ class _LeagueViewState extends State<LeagueView> {
         Row(
           children: [
             Expanded(
-              child: getCountStatsCard(allStats["goals"] as CountStats, "goals")
-            ),
+                child: getCountStatsCard(
+                    allStats["goals"] as CountStats, "goals")),
             Expanded(
-              child: getCountStatsCard(allStats["assists"] as CountStats, "assists"),
+              child: getCountStatsCard(
+                  allStats["assists"] as CountStats, "assists"),
             )
           ],
         ),
         Row(
           children: [
             Expanded(
-              child: getCountStatsCard(allStats["goalsAssistsSum"] as CountStats, "Goals+Assists"),
+              child: getCountStatsCard(
+                  allStats["goalsAssistsSum"] as CountStats, "Goals+Assists"),
             ),
             Expanded(
-              child: getCountStatsCard(allStats["keyPasses"] as CountStats, "Key Passes"),
+              child: getCountStatsCard(
+                  allStats["keyPasses"] as CountStats, "Key Passes"),
             )
           ],
         ),
         Row(
           children: [
             Expanded(
-              child: getRelativeStatsCard(allStats["accuratePasses"] as RelativeStats, "Acc. Passes"),
+              child: getRelativeStatsCard(
+                  allStats["accuratePasses"] as RelativeStats, "Acc. Passes"),
             ),
             Expanded(
-              child: getRelativeStatsCard(allStats["successfulDribbles"] as RelativeStats, "Dribbles"),
+              child: getRelativeStatsCard(
+                  allStats["successfulDribbles"] as RelativeStats, "Dribbles"),
             )
           ],
         ),
         Row(
           children: [
             Expanded(
-              child: getCountStatsCard(allStats["interceptions"] as CountStats, "Interception"),
+              child: getCountStatsCard(
+                  allStats["interceptions"] as CountStats, "Interception"),
             ),
             Expanded(
-              child: getCountStatsCard(allStats["tackles"] as CountStats, "Tackles"),
+              child: getCountStatsCard(
+                  allStats["tackles"] as CountStats, "Tackles"),
             )
           ],
         ),
         Row(
           children: [
             Expanded(
-              child: getCountStatsCard(allStats["clearances"] as CountStats, "Clearances"),
+              child: getCountStatsCard(
+                  allStats["clearances"] as CountStats, "Clearances"),
             ),
             Expanded(
-              child: getCountStatsCard(allStats["saves"] as CountStats, "Saves"),
+              child:
+                  getCountStatsCard(allStats["saves"] as CountStats, "Saves"),
             )
           ],
         ),
         Row(
           children: [
             Expanded(
-              child: getCountStatsCard(allStats["cleanSheet"] as CountStats, "Clean Sheet"),
+              child: getCountStatsCard(
+                  allStats["cleanSheet"] as CountStats, "Clean Sheet"),
             ),
             Expanded(
-              child: getCountStatsCard(allStats["leastConceded"] as CountStats, "Least Conceded"),
+              child: getCountStatsCard(
+                  allStats["leastConceded"] as CountStats, "Least Conceded"),
             )
           ],
         ),
         Row(
           children: [
             Expanded(
-              child: getCountStatsCard(allStats["yellowCards"] as CountStats, "Yellow Cards"),
+              child: getCountStatsCard(
+                  allStats["yellowCards"] as CountStats, "Yellow Cards"),
             ),
             Expanded(
-              child: getCountStatsCard(allStats["redCards"] as CountStats, "Red Cards"),
+              child: getCountStatsCard(
+                  allStats["redCards"] as CountStats, "Red Cards"),
             )
           ],
         ),
@@ -149,7 +165,12 @@ class _LeagueViewState extends State<LeagueView> {
               width: 50,
               height: 50,
             ),
-            Text(player.name + " - " + stat.count.toString() + " (" + stat.precentage.toString() + "%)")
+            Text(player.name +
+                " - " +
+                stat.count.toString() +
+                " (" +
+                stat.precentage.toString() +
+                "%)")
           ],
         ),
       ),
@@ -180,8 +201,8 @@ class _LeagueViewState extends State<LeagueView> {
           ),
           FutureBuilder<List<Object>>(
             future: TitlesLoader.fetchTitles(league.id),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Object>> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Object>> snapshot) {
               if (!snapshot.hasData || snapshot.data == null) {
                 return Container(
                   child: Center(
@@ -239,43 +260,130 @@ class _LeagueViewState extends State<LeagueView> {
           ),
           FutureBuilder<List<Season>>(
             future: getSeasons(),
-            builder: (BuildContext context, AsyncSnapshot<List<Season>> snapshot) {
-              if(!snapshot.hasData) {
-                return Container(child: Center(child: Text("Loading"),),);
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Season>> snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
+                  child: Center(
+                    child: Text("Loading"),
+                  ),
+                );
               }
               print("data found");
               List<String> labels = [];
               List<DropdownMenuItem<String>> ddi = [];
               snapshot.data!.forEach((d) => labels.add(d.year));
-              labels.forEach((l)=>ddi.add(DropdownMenuItem(value: l, child: Text(l),)));
+              labels.forEach((l) => ddi.add(DropdownMenuItem(
+                    value: l,
+                    child: Text(l),
+                  )));
               selectedYear = labels[0];
-              return Column(
-                children: [Container(
+              return Column(children: [
+                Container(
                   margin: EdgeInsets.symmetric(horizontal: 10.0),
                   child: DropdownButtonFormField<String>(
-                  value: selectedYear,
-                  items: ddi,
-                  onChanged: (String? newValue) async {
-                    for(Season season in snapshot.data!) {
-                      if(season.year == newValue)
-                        this.seasonId = season.id;
-                    }
-                    this.stats = await getStats();
+                    value: selectedYear,
+                    items: ddi,
+                    onChanged: (String? newValue) async {
+                      for (Season season in snapshot.data!) {
+                        if (season.year == newValue) this.seasonId = season.id;
+                      }
+                      this.stats = await getStats();
                       selectedYear = newValue!;
-                    setState(() {
-                      selectedYear;
-                    });
-                  },
-              ),
+                      setState(() {
+                        selectedYear;
+                      });
+                    },
+                  ),
                 ),
-              statsColumn(stats!)
-              ]
-              );
+                statsColumn(stats!)
+              ]);
             },
           ),
         ],
       ),
     );
+  }
+
+  Future<List<Match>> getMatches() async {
+    Season firstSeason = (await SeasonsLoader.fetchSeasons(league.id))[0];
+    List<Match> matches =
+        await LeagueMatchesLoader.fetchLeagueMatches(league.id, firstSeason.id);
+    matches.sort((a, b) => b.compareTo(a));
+    return matches;
+  }
+
+  ListView getMatchList(List<Match> matches) {
+    String date = "dd/mm/yyyy";
+    List<Widget> members = [];
+    for (Match m in matches) {
+      DateTime dateTime =
+          DateTime.fromMillisecondsSinceEpoch(m.startTimestamp * 1000);
+      String matchDate = dateTime.day.toString() +
+          "/" +
+          dateTime.month.toString() +
+          "/" +
+          dateTime.year.toString();
+      if (date != matchDate) {
+        members.add(
+            Container(margin: EdgeInsets.all(5.0), child: new Text(matchDate)));
+        date = matchDate;
+      }
+      members.add(Card(
+        margin: EdgeInsets.all(5.0),
+        child: Container(
+          padding: EdgeInsets.all(5.0),
+          child: new Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(dateTime.hour.toString() + ":" + dateTime.minute.toString()),
+              Row(
+                children: [
+                  Text(m.homeTeam.name),
+                  Image.network(
+                    m.homeTeam.teamLogo,
+                    height: 30.0,
+                    width: 30.0,
+                  )
+                ],
+              ),
+              Text(m.homeScore.current.toString() +
+                  " - " +
+                  m.awayScore.current.toString()),
+              Row(
+                children: [
+                  Image.network(
+                    m.awayTeam.teamLogo,
+                    height: 30.0,
+                    width: 30.0,
+                  ),
+                  Text(m.awayTeam.name)
+                ],
+              ),
+            ],
+          ),
+        ),
+      ));
+    }
+    return ListView(
+      children: members,
+    );
+  }
+
+  Container getLeagueMatches() {
+    return Container(
+        child: FutureBuilder<List<Match>>(
+      future: getMatches(),
+      builder: (BuildContext context, AsyncSnapshot<List<Match>> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: Text("Loading..."),
+          );
+        }
+        return getMatchList(snapshot.data!);
+      },
+    ));
   }
 
   @override
@@ -291,8 +399,12 @@ class _LeagueViewState extends State<LeagueView> {
         ),
         body: TabBarView(children: [
           getLeagueOverview(),
-          Container(child: Center(child: Text("Matches"),),),
-          Container(child: Center(child: Text("Standings"),),)
+          getLeagueMatches(),
+          Container(
+            child: Center(
+              child: Text("Standings"),
+            ),
+          )
         ]),
       ),
     );
