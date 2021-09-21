@@ -1,11 +1,13 @@
 import 'dart:collection';
 
+import 'package:Score/Loader/LeagueMatchesLoader.dart';
 import 'package:Score/Loader/SeasonsLoader.dart';
 import 'package:Score/Loader/StandingLoader.dart';
 import 'package:Score/Loader/StatsLoader.dart';
 import 'package:Score/Loader/TitlesLoader.dart';
 import 'package:Score/Model/CountStats.dart';
 import 'package:Score/Model/League.dart';
+import 'package:Score/Model/Match.dart';
 import 'package:Score/Model/Player.dart';
 import 'package:Score/Model/RelativeStats.dart';
 import 'package:Score/Model/Season.dart';
@@ -316,6 +318,72 @@ class _LeagueViewState extends State<LeagueView> {
     );
   }
 
+  Future<List<Match>> getMatches() async {
+    Season firstSeason = (await SeasonsLoader.fetchSeasons(league.id))[0];
+    List<Match> matches =
+        await LeagueMatchesLoader.fetchLeagueMatches(league.id, firstSeason.id);
+    matches.sort((a, b) => b.compareTo(a));
+    return matches;
+  }
+
+  ListView getMatchList(List<Match> matches) {
+    String date = "dd/mm/yyyy";
+    List<Widget> members = [];
+    for (Match m in matches) {
+      DateTime dateTime =
+          DateTime.fromMillisecondsSinceEpoch(m.startTimestamp * 1000);
+      String matchDate = dateTime.day.toString() +
+          "/" +
+          dateTime.month.toString() +
+          "/" +
+          dateTime.year.toString();
+      if (date != matchDate) {
+        members.add(
+            Container(margin: EdgeInsets.all(5.0), child: new Text(matchDate)));
+        date = matchDate;
+      }
+      members.add(Card(
+        margin: EdgeInsets.all(5.0),
+        child: Container(
+          padding: EdgeInsets.all(5.0),
+          child: new Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(dateTime.hour.toString() + ":" + dateTime.minute.toString()),
+              Row(
+                children: [
+                  Text(m.homeTeam.name),
+                  Image.network(
+                    m.homeTeam.teamLogo,
+                    height: 30.0,
+                    width: 30.0,
+                  )
+                ],
+              ),
+              Text(m.homeScore.current.toString() +
+                  " - " +
+                  m.awayScore.current.toString()),
+              Row(
+                children: [
+                  Image.network(
+                    m.awayTeam.teamLogo,
+                    height: 30.0,
+                    width: 30.0,
+                  ),
+                  Text(m.awayTeam.name)
+                ],
+              ),
+            ],
+          ),
+        ),
+      ));
+    }
+    return ListView(
+      children: members,
+    );
+  }
+
   Container getLeagueStandings() {
     return Container(
       child: Column(
@@ -422,6 +490,21 @@ class _LeagueViewState extends State<LeagueView> {
     );
   }
 
+  Container getLeagueMatches() {
+    return Container(
+        child: FutureBuilder<List<Match>>(
+      future: getMatches(),
+      builder: (BuildContext context, AsyncSnapshot<List<Match>> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: Text("Loading..."),
+          );
+        }
+        return getMatchList(snapshot.data!);
+      },
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -435,11 +518,7 @@ class _LeagueViewState extends State<LeagueView> {
         ),
         body: TabBarView(children: [
           getLeagueOverview(),
-          Container(
-            child: Center(
-              child: Text("Matches"),
-            ),
-          ),
+          getLeagueMatches(),
           getLeagueStandings()
         ]),
       ),
