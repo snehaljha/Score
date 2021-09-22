@@ -12,6 +12,7 @@ import 'package:Score/Model/Player.dart';
 import 'package:Score/Model/RelativeStats.dart';
 import 'package:Score/Model/Season.dart';
 import 'package:Score/Model/StandingItem.dart';
+import 'package:Score/Model/Status.dart';
 import 'package:Score/Model/Team.dart';
 import 'package:flutter/material.dart';
 
@@ -361,9 +362,14 @@ class _LeagueViewState extends State<LeagueView> {
                   )
                 ],
               ),
-              Text(m.homeScore.current.toString() +
-                  " - " +
-                  m.awayScore.current.toString()),
+              Column(
+                children: [
+                  Text(m.homeScore!.current.toString() +
+                      " - " +
+                      m.awayScore!.current.toString()),
+                  Text(Status.getStatusMSG(m.statusCode))
+                ],
+              ),
               Row(
                 children: [
                   Image.network(

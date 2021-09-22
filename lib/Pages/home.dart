@@ -9,7 +9,6 @@ class HomePage extends StatefulWidget {
   _HomePage createState() {
     return _HomePage();
   }
-
 }
 
 class _HomePage extends State<HomePage> {
@@ -18,23 +17,18 @@ class _HomePage extends State<HomePage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
-            tabs: [Text("Fav Matches"), Text("Live")],
+          appBar: AppBar(
+            bottom: TabBar(
+              tabs: [Text("Today's Fixture"), Text("My Fixtures")],
+            ),
+            title: Text("Home"),
           ),
-          title: Text("Home"),
-        ),
-        drawer: Drawer(
-          child: Menu(),
-        ),
-        body: TabBarView(
-          children: [
-            FavMatches(),
-            AllMatches()
-          ],
-        )
-      ),
+          drawer: Drawer(
+            child: Menu(),
+          ),
+          body: TabBarView(
+            children: [AllMatches(), FavMatches()],
+          )),
     );
   }
-
 }

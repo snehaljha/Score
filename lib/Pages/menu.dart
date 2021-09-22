@@ -20,12 +20,11 @@ class Menu extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(
-                    Icons.favorite,
-                    color: Colors.red,
+                    Icons.home,
                   ),
                   Container(
                     margin: const EdgeInsets.only(left: 10.0),
-                    child: Text("Favorites"),
+                    child: Text("Home"),
                   )
                 ],
               ),
