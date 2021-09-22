@@ -9,33 +9,20 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import '../constants.dart';
 
-class AllMatchesLoader {
-  static HashMap<String, List<Match>> map = new HashMap();
-  static String? key;
-
-  static Future<List<Match>> fetchAllMatches() async {
-    DateTime dt = DateTime.now();
-    key = dt.year.toString() +
-        "-" +
-        dt.month.toString().padLeft(2, '0') +
-        "-" +
-        dt.day.toString().padLeft(2, '0');
-    if (!map.containsKey(key) || map[key] == null) {
-      String url = Constants.fixtureByDate.replaceFirst("yyyy-mm-dd", key!);
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        print("all matches fetched");
-        return parseAllMatches(response.body);
-      } else {
-        print("all matches not found");
-        throw Exception("Can't fetch Leagues");
-      }
+class LiveMatchesLoader {
+  static Future<List<Match>> fetchLiveMatches() async {
+    String url = Constants.liveMatches;
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      print("live matches fetched");
+      return parseLiveMatches(response.body);
     } else {
-      return map[key]!;
+      print("live matches not found");
+      throw Exception("Can't fetch live matches");
     }
   }
 
-  static List<Match> parseAllMatches(responseBody) {
+  static List<Match> parseLiveMatches(responseBody) {
     var parsed = json.decode(responseBody)["events"];
     List<Match> matches = [];
     int j = 1;
@@ -64,8 +51,7 @@ class AllMatchesLoader {
         matches.add(m);
       }
     }
-    map[key!] = matches;
-    print("all matches parsed");
+    print("live matches parsed");
     return matches;
   }
 

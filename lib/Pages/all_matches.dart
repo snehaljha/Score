@@ -42,32 +42,52 @@ class _AllMatchesState extends State<AllMatches> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(dateTime.hour.toString() + ":" + dateTime.minute.toString()),
-              Row(
-                children: [
-                  Text(m.homeTeam.name),
-                  Image.network(
-                    m.homeTeam.teamLogo,
-                    height: 30.0,
-                    width: 30.0,
-                  )
-                ],
+              Expanded(
+                child: Text(dateTime.hour.toString().padLeft(2, '0') +
+                    ":" +
+                    dateTime.minute.toString().padLeft(2, '0')),
+                flex: 1,
               ),
-              Column(
-                children: [
-                  Text(m.getCurrentScore()),
-                  Text(Status.getStatusMSG(m.statusCode))
-                ],
+              Expanded(
+                flex: 3,
+                child: Row(
+                  children: [
+                    Text(
+                      m.homeTeam.name,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Image.network(
+                      m.homeTeam.teamLogo,
+                      height: 30.0,
+                      width: 30.0,
+                    )
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  Image.network(
-                    m.awayTeam.teamLogo,
-                    height: 30.0,
-                    width: 30.0,
-                  ),
-                  Text(m.awayTeam.name)
-                ],
+              Expanded(
+                flex: 1,
+                child: Column(
+                  children: [
+                    Text(m.getCurrentScore()),
+                    Text(Status.getStatusMSG(m.statusCode))
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Row(
+                  children: [
+                    Image.network(
+                      m.awayTeam.teamLogo,
+                      height: 30.0,
+                      width: 30.0,
+                    ),
+                    Text(
+                      m.awayTeam.name,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
+                ),
               ),
             ],
           ),
