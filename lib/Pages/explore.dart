@@ -1,4 +1,6 @@
+import 'package:Score/Loader/TopTeamsLoader.dart';
 import 'package:Score/Loader/json_loader.dart';
+import 'package:Score/Model/Team.dart';
 import 'package:Score/Model/category.dart';
 import 'package:Score/Pages/LeaguesView.dart';
 import 'package:Score/Pages/menu.dart';
@@ -12,6 +14,53 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
+  Container getTopTeamsPage() {
+    return Container(
+      child: FutureBuilder<List<Team>>(
+        future: TopTeamsLoader.fetchTopTeams(),
+        builder: (BuildContext context, AsyncSnapshot<List<Team>> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text("Loading..."),
+            );
+          }
+          return getTeamsList(snapshot.data!);
+        },
+      ),
+    );
+  }
+
+  ListView getTeamsList(List<Team> teams) {
+    List<Widget> members = [];
+    for (Team team in teams) {
+      members.add(Card(
+        child: Container(
+          padding: EdgeInsets.all(5),
+          child: Row(
+            children: [
+              Container(
+                margin: EdgeInsets.all(3.0),
+                child: Image.network(
+                  team.teamLogo,
+                  height: 30,
+                  width: 30,
+                ),
+              ),
+              Expanded(child: Text(team.name)),
+              Icon(
+                Icons.favorite,
+                color: Colors.black,
+              )
+            ],
+          ),
+        ),
+      ));
+    }
+
+    return ListView(
+      children: members,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,44 +81,49 @@ class _ExploreState extends State<Explore> {
             Container(
                 child: FutureBuilder<List<Category>>(
               future: CategoriesLoader.fetchCategories(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<Category>> snapshot) {
-                if(snapshot.hasData) {
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Category>> snapshot) {
+                if (snapshot.hasData) {
                   List<Category> cats = snapshot.data!;
                   cats.sort();
                   return ListView.builder(
                     itemCount: cats.length,
                     itemBuilder: (context, index) {
                       return Card(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (contex)=>LeaguesView(category: cats[index])));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(5.0),
-                              child: Row(
-                                children: [
-                                  Image.network(
-                                    cats[index].flagUrl,
-                                    width: 35,
-                                    height: 35,
-                                  ),
-                                  SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  Text(cats[index].name)
-                                ],
-                              ),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (contex) =>
+                                        LeaguesView(category: cats[index])));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(5.0),
+                            child: Row(
+                              children: [
+                                Image.network(
+                                  cats[index].flagUrl,
+                                  width: 35,
+                                  height: 35,
+                                ),
+                                SizedBox(
+                                  width: 20.0,
+                                ),
+                                Text(cats[index].name)
+                              ],
                             ),
                           ),
+                        ),
                       );
                     },
                   );
                 }
-                return Container(child: Center(child: Text("Cats cant be loaded")));
-                  },
+                return Container(
+                    child: Center(child: Text("Cats cant be loaded")));
+              },
             )),
-            Container()
+            getTopTeamsPage()
           ],
         ),
       ),
