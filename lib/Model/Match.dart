@@ -8,8 +8,8 @@ class Match implements Comparable {
   int statusCode;
   Team homeTeam;
   Team awayTeam;
-  MatchScore homeScore;
-  MatchScore awayScore;
+  MatchScore? homeScore;
+  MatchScore? awayScore;
   int id;
   int startTimestamp;
 
@@ -25,5 +25,12 @@ class Match implements Comparable {
     if (this.homeTeam.userCount + this.awayTeam.userCount >
         other.homeTeam.userCount + other.awayTeam.userCount) return 1;
     return 0;
+  }
+
+  String getCurrentScore() {
+    if (homeScore == null || awayScore == null) return "-";
+    return homeScore!.current.toString() +
+        " - " +
+        awayScore!.current.toString();
   }
 }
