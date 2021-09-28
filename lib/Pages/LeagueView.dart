@@ -32,6 +32,26 @@ class _LeagueViewState extends State<LeagueView> {
   String selectedYear = "";
   List<StandingItem>? standings = null;
 
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(league.name),
+          bottom: TabBar(
+            tabs: [Text("Overview"), Text("Matches"), Text("Standings")],
+          ),
+        ),
+        body: TabBarView(children: [
+          getLeagueOverview(),
+          getLeagueMatches(),
+          getLeagueStandings()
+        ]),
+      ),
+    );
+  }
+
   Future<List<Season>> getSeasons(int tabNumber) async {
     List<Season> seasons = await SeasonsLoader.fetchSeasons(league.id);
     this.seasonId = seasons[0].id;
@@ -509,25 +529,5 @@ class _LeagueViewState extends State<LeagueView> {
         return getMatchList(snapshot.data!);
       },
     ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(league.name),
-          bottom: TabBar(
-            tabs: [Text("Overview"), Text("Matches"), Text("Standings")],
-          ),
-        ),
-        body: TabBarView(children: [
-          getLeagueOverview(),
-          getLeagueMatches(),
-          getLeagueStandings()
-        ]),
-      ),
-    );
   }
 }
