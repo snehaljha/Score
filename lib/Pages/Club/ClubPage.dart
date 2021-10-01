@@ -1,5 +1,6 @@
 import 'package:Score/Model/Team.dart';
 import 'package:Score/Pages/Club/ClubMatches.dart';
+import 'package:Score/Pages/Club/ClubSquad.dart';
 import 'package:flutter/material.dart';
 
 class ClubPage extends StatefulWidget {
@@ -30,8 +31,8 @@ class _ClubPageState extends State<ClubPage> {
           ClubMatches(
             team: team,
           ),
-          getLeagueMatches(),
-          getLeagueStandings()
+          ClubSquad(team: team),
+          Container()
         ]),
       ),
     );

@@ -1,7 +1,10 @@
+import 'dart:js';
+
 import 'package:Score/Loader/TopTeamsLoader.dart';
 import 'package:Score/Loader/json_loader.dart';
 import 'package:Score/Model/Team.dart';
 import 'package:Score/Model/category.dart';
+import 'package:Score/Pages/Club/ClubPage.dart';
 import 'package:Score/Pages/LeaguesView.dart';
 import 'package:Score/Pages/menu.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +17,7 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
-  Container getTopTeamsPage() {
+  Container getTopTeamsPage(ct) {
     return Container(
       child: FutureBuilder<List<Team>>(
         future: TopTeamsLoader.fetchTopTeams(),
@@ -24,34 +27,40 @@ class _ExploreState extends State<Explore> {
               child: Text("Loading..."),
             );
           }
-          return getTeamsList(snapshot.data!);
+          return getTeamsList(snapshot.data!, ct);
         },
       ),
     );
   }
 
-  ListView getTeamsList(List<Team> teams) {
+  ListView getTeamsList(List<Team> teams, ct) {
     List<Widget> members = [];
     for (Team team in teams) {
       members.add(Card(
-        child: Container(
-          padding: EdgeInsets.all(5),
-          child: Row(
-            children: [
-              Container(
-                margin: EdgeInsets.all(3.0),
-                child: Image.network(
-                  team.teamLogo,
-                  height: 30,
-                  width: 30,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+                ct, MaterialPageRoute(builder: (ct) => ClubPage(team: team)));
+          },
+          child: Container(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.all(3.0),
+                  child: Image.network(
+                    team.teamLogo,
+                    height: 30,
+                    width: 30,
+                  ),
                 ),
-              ),
-              Expanded(child: Text(team.name)),
-              Icon(
-                Icons.favorite,
-                color: Colors.black,
-              )
-            ],
+                Expanded(child: Text(team.name)),
+                Icon(
+                  Icons.favorite,
+                  color: Colors.black,
+                )
+              ],
+            ),
           ),
         ),
       ));
@@ -123,7 +132,7 @@ class _ExploreState extends State<Explore> {
                     child: Center(child: Text("Cats cant be loaded")));
               },
             )),
-            getTopTeamsPage()
+            getTopTeamsPage(context)
           ],
         ),
       ),
