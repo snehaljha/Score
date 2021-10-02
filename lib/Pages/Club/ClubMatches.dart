@@ -35,7 +35,9 @@ class _ClubMatchesState extends State<ClubMatches> {
   }
 
   ListView getMatchList(List<Match> matches) {
+    matches.sort();
     String date = "dd/mm/yyyy";
+    String cat = "cat";
     List<Widget> members = [];
     for (Match m in matches) {
       DateTime dateTime =
@@ -50,6 +52,11 @@ class _ClubMatchesState extends State<ClubMatches> {
             Container(margin: EdgeInsets.all(5.0), child: new Text(matchDate)));
         date = matchDate;
       }
+      if (cat != m.category.name) {
+        members.add(Container(
+            margin: EdgeInsets.all(5.0), child: new Text(m.category.name)));
+        cat = m.category.name;
+      }
       members.add(Card(
         margin: EdgeInsets.all(5.0),
         child: Container(
@@ -58,34 +65,52 @@ class _ClubMatchesState extends State<ClubMatches> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(dateTime.hour.toString() + ":" + dateTime.minute.toString()),
-              Row(
-                children: [
-                  Text(m.homeTeam.name),
-                  Image.network(
-                    m.homeTeam.teamLogo,
-                    height: 30.0,
-                    width: 30.0,
-                  )
-                ],
+              Expanded(
+                child: Text(dateTime.hour.toString().padLeft(2, '0') +
+                    ":" +
+                    dateTime.minute.toString().padLeft(2, '0')),
+                flex: 1,
               ),
-              Column(
-                children: [
-                  Text(m.homeScore!.current.toString() +
-                      " - " +
-                      m.awayScore!.current.toString()),
-                  Text(Status.getStatusMSG(m.statusCode))
-                ],
+              Expanded(
+                flex: 3,
+                child: Row(
+                  children: [
+                    Text(
+                      m.homeTeam.name,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Image.network(
+                      m.homeTeam.teamLogo,
+                      height: 30.0,
+                      width: 30.0,
+                    )
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  Image.network(
-                    m.awayTeam.teamLogo,
-                    height: 30.0,
-                    width: 30.0,
-                  ),
-                  Text(m.awayTeam.name)
-                ],
+              Expanded(
+                flex: 1,
+                child: Column(
+                  children: [
+                    Text(m.getCurrentScore()),
+                    Text(Status.getStatusMSG(m.statusCode))
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Row(
+                  children: [
+                    Image.network(
+                      m.awayTeam.teamLogo,
+                      height: 30.0,
+                      width: 30.0,
+                    ),
+                    Text(
+                      m.awayTeam.name,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ],
+                ),
               ),
             ],
           ),
