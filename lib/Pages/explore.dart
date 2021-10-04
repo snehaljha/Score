@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:Score/Loader/TopTeamsLoader.dart';
 import 'package:Score/Loader/json_loader.dart';
 import 'package:Score/Model/Team.dart';

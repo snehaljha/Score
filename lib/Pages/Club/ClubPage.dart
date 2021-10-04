@@ -3,6 +3,8 @@ import 'package:Score/Pages/Club/ClubMatches.dart';
 import 'package:Score/Pages/Club/ClubSquad.dart';
 import 'package:flutter/material.dart';
 
+import 'ClubStats.dart';
+
 class ClubPage extends StatefulWidget {
   Team team;
   ClubPage({Key? key, required this.team}) : super(key: key);
@@ -32,7 +34,7 @@ class _ClubPageState extends State<ClubPage> {
             team: team,
           ),
           ClubSquad(team: team),
-          Container()
+          ClubStats(team: team)
         ]),
       ),
     );
